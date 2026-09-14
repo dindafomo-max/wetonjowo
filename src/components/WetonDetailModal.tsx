@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Calendar, Sparkles, Compass, ShieldAlert, Award } from 'lucide-react';
-import { hitungWetonLengkap, getDeviceLocalDateString } from '../utils/javaneseCalendar';
+import { hitungWetonLengkap, getDeviceLocalDateString, formatDateDDMMYYYY } from '../utils/javaneseCalendar';
 import { WetonInfo } from '../types/weton';
 
 interface WetonDetailModalProps {
@@ -56,7 +56,9 @@ export const WetonDetailModal: React.FC<WetonDetailModalProps> = ({
           <div className="bg-gradient-to-br from-blue-950 to-slate-900 text-white rounded-2xl p-4 space-y-2 border border-blue-800">
             <div className="flex items-baseline justify-between">
               <div>
-                <span className="text-[10px] text-blue-300 font-bold uppercase">Weton Lahir:</span>
+                <span className="text-[10px] text-blue-300 font-bold uppercase block">
+                  Weton Lahir ({formatDateDDMMYYYY(selectedDate)}):
+                </span>
                 <h4 className="text-2xl font-black text-white">
                   {weton.hari} {weton.pasaran}
                 </h4>

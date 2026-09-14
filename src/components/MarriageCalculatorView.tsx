@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Calendar, CheckCircle2, AlertTriangle, Clock, ShieldCheck, Sparkles, Filter, ShieldAlert, Award, Printer } from 'lucide-react';
-import { hitungWetonLengkap } from '../utils/javaneseCalendar';
+import { hitungWetonLengkap, formatDateDDMMYYYY } from '../utils/javaneseCalendar';
 import { cariHariNikahTerbaik } from '../utils/petungCalculators';
 import { RekomendasiHariNikah } from '../types/weton';
 import { useWetonPantangan } from '../context/WetonPantanganContext';
@@ -243,7 +243,7 @@ export const MarriageCalculatorView: React.FC = () => {
                   {item.hari} {item.pasaran}
                 </div>
                 <div className="text-xs text-slate-500 font-medium">
-                  {item.tanggal} • Neptu Hari H: {item.neptuHariH}
+                  {formatDateDDMMYYYY(item.tanggal)} • Neptu Hari H: {item.neptuHariH}
                 </div>
 
                 {/* Pancasuda & Status */}

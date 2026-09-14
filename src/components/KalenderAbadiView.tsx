@@ -34,7 +34,7 @@ import {
   TanggalKalenderDetail,
   generateBulanKalenderAbadi
 } from '../data/kalenderAbadiData';
-import { hitungWetonLengkap, getPranataMangsa } from '../utils/javaneseCalendar';
+import { hitungWetonLengkap, getPranataMangsa, formatDateDDMMYYYY } from '../utils/javaneseCalendar';
 import { hitungPetungArahLengkap } from '../data/nagaDinaData';
 import { PasaranJawa } from '../types/weton';
 import { printElement, downloadTextFile } from '../utils/printExportUtils';
@@ -618,7 +618,7 @@ Sistem WETON JOWO - https://wetonjowo.web.app\n`;
                 Rincian Tanggal & Weton Terpilih
               </span>
               <h3 className="text-xl sm:text-2xl font-black text-slate-900">
-                {selectedDay.hariMasehi}, {selectedDay.tanggalMasehi} {BULAN_MASEHI[selectedDay.bulanMasehi - 1]} {selectedDay.tahunMasehi}
+                {selectedDay.hariMasehi}, {formatDateDDMMYYYY(selectedDay.isoString)}
               </h3>
             </div>
 

@@ -12,7 +12,7 @@ import {
   HeartHandshake,
   Check
 } from 'lucide-react';
-import { hitungWetonLengkap, hitungSatriyaJayabaya } from '../utils/javaneseCalendar';
+import { hitungWetonLengkap, hitungSatriyaJayabaya, formatDateDDMMYYYY } from '../utils/javaneseCalendar';
 import { TabView } from '../types/weton';
 
 export interface AnggotaKeluarga {
@@ -287,7 +287,7 @@ export const CatatanKeluargaModal: React.FC<CatatanKeluargaModalProps> = ({
                   </div>
 
                   <div className="text-xs text-slate-600 flex flex-wrap items-center gap-2">
-                    <span>Lahir: <strong>{member.tanggalLahir}</strong></span>
+                    <span>Lahir: <strong>{formatDateDDMMYYYY(member.tanggalLahir)}</strong></span>
                     <span>•</span>
                     <span className="text-slate-900 font-bold">
                       {member.wetonStr}

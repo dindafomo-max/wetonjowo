@@ -49,20 +49,41 @@ export function getDeviceLocalDateString(customDate?: Date): string {
 }
 
 /**
- * Format tanggal lokal perangkat ke bahasa Indonesia lengkap
- * Contoh: "Senin, 14 September 2026"
+ * Mengubah format tanggal (YYYY-MM-DD atau objek Date) ke format dd-mm-yyyy (Contoh: "14-09-2026")
+ */
+export function formatDateDDMMYYYY(dateInput?: string | Date | null): string {
+  if (!dateInput) return '';
+  if (typeof dateInput === 'string') {
+    let clean = dateInput.trim();
+    if (clean.includes('T')) {
+      clean = clean.split('T')[0];
+    }
+    const parts = clean.split('-');
+    if (parts.length === 3 && parts[0].length === 4) {
+      const [y, m, d] = parts;
+      return `${d.padStart(2, '0')}-${m.padStart(2, '0')}-${y}`;
+    }
+  }
+  const d = new Date(dateInput);
+  if (isNaN(d.getTime())) return String(dateInput);
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${day}-${month}-${year}`;
+}
+
+/**
+ * Format tanggal lokal perangkat ke bahasa Indonesia lengkap dengan format dd-mm-yyyy
+ * Contoh: "Senin, 14-09-2026"
  */
 export function getDeviceFormattedDate(customDate?: Date): string {
   const d = customDate || new Date();
   try {
-    return d.toLocaleDateString('id-ID', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    const dayName = d.toLocaleDateString('id-ID', { weekday: 'long' });
+    const formattedDDMMYYYY = formatDateDDMMYYYY(d);
+    return `${dayName}, ${formattedDDMMYYYY}`;
   } catch {
-    return getDeviceLocalDateString(d);
+    return formatDateDDMMYYYY(d);
   }
 }
 
