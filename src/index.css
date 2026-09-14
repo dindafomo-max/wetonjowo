@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+@media print {
+  @page {
+    size: auto;
+    margin: 8mm;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Sembunyikan elemen UI interaktif saat mencetak */
+  header,
+  nav,
+  footer,
+  .no-print,
+  .print-hidden,
+  button,
+  input,
+  select,
+  .modal-backdrop-blur,
+  [data-print-hidden="true"] {
+    display: none !important;
+  }
+
+  /* Pastikan modal printable dapat dicetak secara utuh */
+  .printable-area {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    overflow: visible !important;
+  }
+
+  .printable-card {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+

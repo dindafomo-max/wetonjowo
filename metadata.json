@@ -1,0 +1,6 @@
+{
+  "name": "WETON JOWO",
+  "description": "Web Eksplorasi Tradisi & Orientasi Neptu Jawa Objektif Warisan Otentik berdasar Kitab Betaljemur Adammakna dengan antarmuka modern biru-maroon.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
