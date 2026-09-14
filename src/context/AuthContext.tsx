@@ -29,7 +29,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const saved = localStorage.getItem(STORAGE_KEY);
       if (!saved) return null;
       const parsed: UserProfile = JSON.parse(saved);
-      // Strictly enforce that only dindafomo@gmail.com holds admin rights
+      // Strictly enforce that ONLY dindafomo@gmail.com holds admin/owner rights
       const isActuallyAdmin = parsed.email?.toLowerCase() === 'dindafomo@gmail.com';
       return {
         ...parsed,
@@ -46,7 +46,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isSaasModalOpen, setIsSaasModalOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
 
-  // Strictly only dindafomo@gmail.com is recognized as administrator
+  // Strictly enforce dindafomo@gmail.com as sole Administrator
   const isAdmin = Boolean(user && user.email.toLowerCase() === 'dindafomo@gmail.com');
 
   useEffect(() => {
@@ -65,7 +65,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const cleanEmail = email.trim().toLowerCase();
     const defaultName = customNama?.trim() || cleanEmail.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     
-    // Strict admin check: Only dindafomo@gmail.com is admin; all others are regular users
+    // Strict admin check: ONLY dindafomo@gmail.com is Administrator; ALL other emails are regular users
     const userIsAdmin = cleanEmail === 'dindafomo@gmail.com';
 
     const avatarUrl = `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${encodeURIComponent(cleanEmail)}`;

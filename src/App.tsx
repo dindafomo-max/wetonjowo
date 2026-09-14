@@ -28,6 +28,7 @@ import { GlosariumPrimbonModal } from './components/GlosariumPrimbonModal';
 import { CatatanKeluargaModal } from './components/CatatanKeluargaModal';
 import { LoginGmailModal } from './components/LoginGmailModal';
 import { DanaDonationModal } from './components/DanaDonationModal';
+import { AiStudioIframeRestrictionGuard } from './components/AiStudioIframeRestrictionGuard';
 import { useWetonPantangan } from './context/WetonPantanganContext';
 import { useAuth } from './context/AuthContext';
 import { hitungWetonLengkap, getPranataMangsa, getDeviceLocalDateString } from './utils/javaneseCalendar';
@@ -94,7 +95,8 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 flex font-sans antialiased">
+    <AiStudioIframeRestrictionGuard>
+      <div className="min-h-screen bg-slate-100 text-slate-900 flex font-sans antialiased">
       {/* ========================================================================= */}
       {/* 1. DYNAMIC RESPONSIVE SIDEBAR (DESKTOP FIXED/COLLAPSIBLE & MOBILE DRAWER) */}
       {/* ========================================================================= */}
@@ -252,7 +254,7 @@ export default function App() {
                     Modul Khusus Administrator Sistem
                   </h2>
                   <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                    Modul Arsitektur Database & Source Code Google Apps Script ini adalah halaman khusus administrator sistem (dindafomo@gmail.com). Halaman ini tidak dapat diakses oleh pemakai umum.
+                    Modul Arsitektur Database & Source Code Google Apps Script ini adalah halaman khusus administrator sistem. Pengguna Gmail terdaftar diizinkan melihat dan menggunakan seluruh fitur layanan WETON JOWO, tetapi tidak diizinkan melihat atau mengedit struktur utama aplikasi ini.
                   </p>
                 </div>
 
@@ -337,5 +339,6 @@ export default function App() {
         onOpenSidebarMobile={() => setIsOpenMobile(true)}
       />
     </div>
+    </AiStudioIframeRestrictionGuard>
   );
 }
