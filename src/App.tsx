@@ -29,6 +29,7 @@ import { CatatanKeluargaModal } from './components/CatatanKeluargaModal';
 import { LoginGmailModal } from './components/LoginGmailModal';
 import { DanaDonationModal } from './components/DanaDonationModal';
 import { AiStudioIframeRestrictionGuard } from './components/AiStudioIframeRestrictionGuard';
+import { NarratorWelcomeBanner } from './components/NarratorWelcomeBanner';
 import { useWetonPantangan } from './context/WetonPantanganContext';
 import { useAuth } from './context/AuthContext';
 import { hitungWetonLengkap, getPranataMangsa, getDeviceLocalDateString } from './utils/javaneseCalendar';
@@ -138,6 +139,9 @@ export default function App() {
 
         {/* Dynamic Responsive Main Content Canvas */}
         <main className="max-w-5xl w-full mx-auto px-3 sm:px-5 lg:px-6 pt-4 pb-8 space-y-5">
+          {/* Automatic Audio Narrator Banner */}
+          <NarratorWelcomeBanner />
+
           {/* BERANDA TAB: Landing Page Dinamis dengan Prakata, Penjelasan Fitur, & Akses Menu */}
           {activeTab === 'beranda' && (
             <div className="space-y-6">
