@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Volume2, VolumeX, Pause, Play, RotateCcw, Sparkles, BookOpen, ChevronDown, ChevronUp, X, ShieldCheck, User } from 'lucide-react';
-import { narratorEngine, VoiceOption } from '../utils/narratorSpeech';
+import { Volume2, VolumeX, Pause, Play, RotateCcw, Sparkles, BookOpen, ChevronDown, ChevronUp, X, ShieldCheck, User, Sliders } from 'lucide-react';
+import { narratorEngine, VoiceOption, JavaneseVoicePreset, fontPresets } from '../utils/narratorSpeech';
 
 export const NarratorWelcomeBanner: React.FC = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -9,14 +9,16 @@ export const NarratorWelcomeBanner: React.FC = () => {
   const [isDismissed, setIsDismissed] = useState(false);
   const [voiceOptions, setVoiceOptions] = useState<VoiceOption[]>([]);
   const [activeVoiceIdx, setActiveVoiceIdx] = useState<number>(0);
+  const [currentPreset, setCurrentPreset] = useState<JavaneseVoicePreset>('pini_sepuh');
 
   useEffect(() => {
     // Subscribe to speech state updates
-    const unsubscribe = narratorEngine.subscribe((speaking, paused, voices, activeIdx) => {
+    const unsubscribe = narratorEngine.subscribe((speaking, paused, voices, activeIdx, preset) => {
       setIsSpeaking(speaking);
       setIsPaused(paused);
       setVoiceOptions(voices);
       setActiveVoiceIdx(activeIdx);
+      setCurrentPreset(preset);
     });
 
     // Automatically start narration when the app is opened by the user
@@ -37,7 +39,7 @@ export const NarratorWelcomeBanner: React.FC = () => {
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
 
         {/* Banner Top Header Controls */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-blue-800/60 pb-3 mb-4 gap-2 relative z-10">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-blue-800/60 pb-3 mb-3 gap-2 relative z-10">
           <div className="flex items-center gap-2">
             <span className="relative flex h-3 w-3">
               {isSpeaking && !isPaused && (
@@ -51,20 +53,20 @@ export const NarratorWelcomeBanner: React.FC = () => {
                 <span>Narator Otomatis Logat Jawa Indonesia</span>
               </span>
               <span className="text-[10px] text-blue-200/80 italic">
-                Aksen Pini Sepuh • Tenang, Berwibawa & Eling Waspada
+                {fontPresets[currentPreset]?.description || 'Aksen Pini Sepuh • Tenang & Berwibawa'}
               </span>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            {/* Voice Dropdown if available */}
-            {voiceOptions.length > 1 && (
+            {/* Voice Engine Selector */}
+            {voiceOptions.length > 0 && (
               <div className="flex items-center gap-1 bg-blue-900/60 border border-blue-700/50 rounded-xl px-2 py-1 text-[11px] text-blue-100">
                 <User className="w-3 h-3 text-amber-300 shrink-0" />
                 <select
                   value={activeVoiceIdx}
                   onChange={(e) => narratorEngine.setSelectedVoice(Number(e.target.value))}
-                  className="bg-transparent text-white font-semibold outline-none cursor-pointer max-w-[130px] sm:max-w-[180px] truncate"
+                  className="bg-transparent text-white font-semibold outline-none cursor-pointer max-w-[130px] sm:max-w-[170px] truncate"
                 >
                   {voiceOptions.map((v, i) => (
                     <option key={i} value={i} className="bg-slate-900 text-white">
@@ -127,6 +129,30 @@ export const NarratorWelcomeBanner: React.FC = () => {
               <X className="w-4 h-4" />
             </button>
           </div>
+        </div>
+
+        {/* Character Voice Style Preset Chips */}
+        <div className="flex flex-wrap items-center gap-1.5 mb-3 bg-slate-900/70 p-2 rounded-2xl border border-blue-900/60 relative z-10">
+          <span className="text-[11px] font-bold text-amber-300 flex items-center gap-1 mr-1">
+            <Sliders className="w-3 h-3" /> Karakter Logat Suku Jawa:
+          </span>
+          {(Object.keys(fontPresets) as JavaneseVoicePreset[]).map((key) => {
+            const preset = fontPresets[key];
+            const isActive = currentPreset === key;
+            return (
+              <button
+                key={key}
+                onClick={() => narratorEngine.setPreset(key)}
+                className={`text-[11px] font-bold px-2.5 py-1 rounded-xl transition ${
+                  isActive
+                    ? 'bg-rose-600 text-white shadow-sm ring-1 ring-rose-400'
+                    : 'bg-blue-950/80 hover:bg-blue-900 text-blue-200 border border-blue-800/60'
+                }`}
+              >
+                {preset.name}
+              </button>
+            );
+          })}
         </div>
 
         {/* Active Audio Wave Visualizer Banner */}
