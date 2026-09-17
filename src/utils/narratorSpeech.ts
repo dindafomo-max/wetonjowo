@@ -92,32 +92,90 @@ class NarratorSpeechEngine {
     const rawVoices = this.synth.getVoices();
     if (!rawVoices || rawVoices.length === 0) return;
 
-    const options: VoiceOption[] = rawVoices.map((v) => {
+    // Filter strictly for Indonesian (id / id-ID) or Javanese (jv / jw / jawa) voices
+    const validVoices = rawVoices.filter((v) => {
       const lang = (v.lang || '').toLowerCase();
       const name = (v.name || '').toLowerCase();
-      const isJavanese = lang.includes('jv') || lang.includes('jw') || name.includes('javanese') || name.includes('jawa');
-      const isIndonesian = lang.includes('id') || name.includes('indonesia') || name.includes('bahasa');
 
-      let label = v.name;
-      if (isJavanese) label = `🇮🇩 ${v.name} (Suku Jawa Original)`;
-      else if (isIndonesian) label = `🇮🇩 ${v.name} (Logat Indonesia)`;
+      // Exclude foreign languages explicitly
+      const isForeign =
+        lang.startsWith('en') ||
+        lang.startsWith('vi') ||
+        lang.startsWith('fr') ||
+        lang.startsWith('es') ||
+        lang.startsWith('zh') ||
+        lang.startsWith('ja') ||
+        lang.startsWith('ko') ||
+        lang.startsWith('de') ||
+        lang.startsWith('ru') ||
+        lang.startsWith('hi') ||
+        lang.startsWith('ar') ||
+        name.includes('vietnam') ||
+        name.includes('united states') ||
+        name.includes('english') ||
+        name.includes('american') ||
+        name.includes('british');
 
-      return {
-        voice: v,
-        displayName: label,
-        isJavanese,
-        isIndonesian,
-      };
+      if (isForeign && !lang.includes('id') && !lang.includes('jv') && !lang.includes('jw') && !name.includes('indonesia') && !name.includes('jawa')) {
+        return false;
+      }
+
+      return (
+        lang.includes('id') ||
+        lang.includes('jv') ||
+        lang.includes('jw') ||
+        name.includes('indonesia') ||
+        name.includes('bahasa') ||
+        name.includes('javanese') ||
+        name.includes('jawa') ||
+        name.includes('damayanti') ||
+        name.includes('gadis') ||
+        name.includes('ardi') ||
+        name.includes('andika')
+      );
     });
 
-    // Sort: Javanese (jv/jw) > Indonesian (id) > Others
-    options.sort((a, b) => {
-      const aScore = a.isJavanese ? 4 : a.isIndonesian ? 2 : 0;
-      const bScore = b.isJavanese ? 4 : b.isIndonesian ? 2 : 0;
+    if (validVoices.length === 0) {
+      // Create clean Indonesian fallback voice profiles if device browser doesn't list explicit id-ID objects
+      const systemDefaultVoice = rawVoices.find((v) => (v.lang || '').toLowerCase().includes('id')) || null;
+      this.availableVoiceOptions = [
+        {
+          voice: systemDefaultVoice as SpeechSynthesisVoice,
+          displayName: '🇮🇩 Suara Indonesia (Suku Jawa Original)',
+          isJavanese: true,
+          isIndonesian: true,
+        },
+        {
+          voice: systemDefaultVoice as SpeechSynthesisVoice,
+          displayName: '🇮🇩 Suara Indonesia (Logat Kejawen Medok)',
+          isJavanese: true,
+          isIndonesian: true,
+        },
+      ];
+    } else {
+      this.availableVoiceOptions = validVoices.map((v) => {
+        const lang = (v.lang || '').toLowerCase();
+        const name = (v.name || '').toLowerCase();
+        const isJawa = lang.includes('jv') || lang.includes('jw') || name.includes('javanese') || name.includes('jawa');
+
+        return {
+          voice: v,
+          displayName: isJawa
+            ? `🇮🇩 ${v.name} (Suku Jawa Original)`
+            : `🇮🇩 ${v.name} (Bahasa Indonesia)`,
+          isJavanese: isJawa,
+          isIndonesian: true,
+        };
+      });
+    }
+
+    // Sort so Javanese (jv) comes before standard Indonesian (id)
+    this.availableVoiceOptions.sort((a, b) => {
+      const aScore = a.isJavanese ? 4 : 2;
+      const bScore = b.isJavanese ? 4 : 2;
       return bScore - aScore;
     });
 
-    this.availableVoiceOptions = options;
     this.notify();
   }
 
@@ -208,12 +266,19 @@ class NarratorSpeechEngine {
     utterance.rate = preset.rate;
     utterance.pitch = preset.pitch;
 
-    // Pick selected voice or fallback to best Javanese/Indonesian voice
+    // Pick selected voice or fallback strictly to Javanese/Indonesian voice
     if (this.availableVoiceOptions.length > 0) {
       const selectedObj = this.availableVoiceOptions[this.selectedVoiceIndex] || this.availableVoiceOptions[0];
-      utterance.voice = selectedObj.voice;
-      if (selectedObj.isJavanese) {
-        utterance.lang = selectedObj.voice.lang || 'jv-ID';
+      if (selectedObj && selectedObj.voice) {
+        const vLang = (selectedObj.voice.lang || '').toLowerCase();
+        const vName = (selectedObj.voice.name || '').toLowerCase();
+        const isIndoOrJawa = vLang.includes('id') || vLang.includes('jv') || vLang.includes('jw') || vName.includes('indonesia') || vName.includes('jawa');
+        if (isIndoOrJawa) {
+          utterance.voice = selectedObj.voice;
+          if (selectedObj.isJavanese || vLang.includes('jv') || vLang.includes('jw')) {
+            utterance.lang = selectedObj.voice.lang || 'jv-ID';
+          }
+        }
       }
     } else {
       const voices = this.synth.getVoices();
@@ -225,6 +290,7 @@ class NarratorSpeechEngine {
         utterance.lang = javaneseVoice.lang;
       } else if (indoVoice) {
         utterance.voice = indoVoice;
+        utterance.lang = indoVoice.lang || 'id-ID';
       }
     }
 
