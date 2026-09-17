@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Volume2, VolumeX, Pause, Play, RotateCcw, Sparkles, BookOpen, ChevronDown, ChevronUp, X, ShieldCheck } from 'lucide-react';
-import { narratorEngine, NARRATOR_TEXT_FULL } from '../utils/narratorSpeech';
+import { Volume2, VolumeX, Pause, Play, RotateCcw, Sparkles, BookOpen, ChevronDown, ChevronUp, X, ShieldCheck, User } from 'lucide-react';
+import { narratorEngine, VoiceOption } from '../utils/narratorSpeech';
 
 export const NarratorWelcomeBanner: React.FC = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
+  const [voiceOptions, setVoiceOptions] = useState<VoiceOption[]>([]);
+  const [activeVoiceIdx, setActiveVoiceIdx] = useState<number>(0);
 
   useEffect(() => {
     // Subscribe to speech state updates
-    const unsubscribe = narratorEngine.subscribe((speaking, paused) => {
+    const unsubscribe = narratorEngine.subscribe((speaking, paused, voices, activeIdx) => {
       setIsSpeaking(speaking);
       setIsPaused(paused);
+      setVoiceOptions(voices);
+      setActiveVoiceIdx(activeIdx);
     });
 
     // Automatically start narration when the app is opened by the user
@@ -33,7 +37,7 @@ export const NarratorWelcomeBanner: React.FC = () => {
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
 
         {/* Banner Top Header Controls */}
-        <div className="flex items-center justify-between border-b border-blue-800/60 pb-3 mb-4 relative z-10">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-blue-800/60 pb-3 mb-4 gap-2 relative z-10">
           <div className="flex items-center gap-2">
             <span className="relative flex h-3 w-3">
               {isSpeaking && !isPaused && (
@@ -41,13 +45,36 @@ export const NarratorWelcomeBanner: React.FC = () => {
               )}
               <span className={`relative inline-flex rounded-full h-3 w-3 ${isSpeaking && !isPaused ? 'bg-emerald-500' : 'bg-rose-500'}`} />
             </span>
-            <span className="text-xs font-bold uppercase tracking-wider text-rose-300 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              <span>Narator Otomatis Pembuka Aplikasi</span>
-            </span>
+            <div className="flex flex-col">
+              <span className="text-xs font-bold uppercase tracking-wider text-rose-300 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <span>Narator Otomatis Logat Jawa Indonesia</span>
+              </span>
+              <span className="text-[10px] text-blue-200/80 italic">
+                Aksen Pini Sepuh • Tenang, Berwibawa & Eling Waspada
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Voice Dropdown if available */}
+            {voiceOptions.length > 1 && (
+              <div className="flex items-center gap-1 bg-blue-900/60 border border-blue-700/50 rounded-xl px-2 py-1 text-[11px] text-blue-100">
+                <User className="w-3 h-3 text-amber-300 shrink-0" />
+                <select
+                  value={activeVoiceIdx}
+                  onChange={(e) => narratorEngine.setSelectedVoice(Number(e.target.value))}
+                  className="bg-transparent text-white font-semibold outline-none cursor-pointer max-w-[130px] sm:max-w-[180px] truncate"
+                >
+                  {voiceOptions.map((v, i) => (
+                    <option key={i} value={i} className="bg-slate-900 text-white">
+                      {v.displayName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
             {/* Play/Pause Main Control Button */}
             <button
               onClick={() => narratorEngine.toggle()}
@@ -107,7 +134,7 @@ export const NarratorWelcomeBanner: React.FC = () => {
           <div className="mb-4 bg-emerald-950/70 border border-emerald-500/40 p-2.5 rounded-2xl flex items-center justify-between gap-3 text-xs text-emerald-200 relative z-10 animate-pulse">
             <div className="flex items-center gap-2">
               <Volume2 className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span className="font-bold">Narator Suara Sedang Membaca Pesan Pembuka...</span>
+              <span className="font-bold">Narator Suara Suku Jawa Sedang Membaca Pesan Pembuka...</span>
             </div>
             <div className="flex items-center gap-1 h-3">
               <span className="w-1 h-full bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
